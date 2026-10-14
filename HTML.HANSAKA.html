@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base target="_self">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidSaver — Free Video Downloader</title>
+    <meta name="description" content="VidSaver lets you download videos from hundreds of platforms in HD quality — fast, free, and secure. Paste a link and save your video in seconds.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #8b5cf6;
+            --accent-dark: #6d28d9;
+            --surface: #0f172a;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        ::selection {
+            background: var(--accent);
+            color: #fff;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dark);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-200 antialiased">
+
+    <!-- ===== HEADER ===== -->
+    <header class="fixed inset-x-0 top-0 z-50 border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-md">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <nav class="flex h-16 items-center justify-between" aria-label="Main navigation">
+                <a href="#home" class="flex shrink-0 items-center gap-2" aria-label="VidSaver home">
+                    <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 shadow-lg shadow-violet-900/40">
+                        <svg class="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </span>
+                    <span class="text-lg font-extrabold tracking-tight text-white">Vid<span class="text-violet-400">Saver</span></span>
+                </a>
+                <ul id="nav-list" class="hidden items-center gap-1 text-sm font-medium md:flex"></ul>
+                <div class="flex items-center gap-3">
+                    <a href="#home" class="hidden items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-900/40 transition hover:bg-violet-500 md:inline-flex">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4"/>
+                        </svg>
+                        Download Now
+                    </a>
+                    <button id="menu-btn" class="rounded-lg p-2 text-slate-300 transition hover:bg-slate-800 md:hidden" aria-label="Toggle navigation menu" aria-expanded="false">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+        </div>
+        <div id="mobile-menu" class="hidden border-t border-slate-800 bg-slate-950/95 px-4 py-3 md:hidden">
+            <ul id="mobile-nav-list" class="flex flex-col gap-1"></ul>
+        </div>
+    </header>
+
+    <main>
+        <!-- ===== HERO ===== -->
+        <section id="home" class="relative overflow-hidden pb-20 pt-28 sm:pb-24 sm:pt-36">
+            <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(124,58,237,0.25),transparent_60%)]" aria-hidden="true"></div>
+            <div class="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+                <span class="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold text-violet-300">
+                    🚀 Free forever — no registration needed
+                </span>
+                <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                    Download Videos <span class="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">Effortlessly</span>
+                </h1>
+                <p class="mx-auto mt-5 max-w-2xl text-lg text-slate-400">
+                    Paste any video link and grab it in HD quality in seconds. Works with hundreds of platforms — no software to install.
+                </p>
+
+                <form id="download-form" class="mx-auto mt-9 flex max-w-2xl flex-col gap-3 sm:flex-row" novalidate>
+                    <label for="video-url" class="sr-only">Video URL</label>
+                    <input id="video-url" type="url" placeholder="Paste video link here…" class="flex-1 rounded-xl border border-slate-700 bg-slate-900/80 px-5 py-3.5 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30" autocomplete="off">
+                    <button type="submit" id="download-btn" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-900/40 transition hover:opacity-90 active:scale-[0.98]">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4"/>
+                        </svg>
+                        Download
+                    </button>
+                </form>
+                <p id="form-error" class="mt-3 hidden text-sm font-medium text-rose-400" role="alert"></p>
+
+                <div id="download-result" class="mx-auto mt-8 hidden max-w-2xl rounded-2xl border border-slate-700 bg-slate-900/80 p-5 text-left" aria-live="polite"></div>
+
+                <dl id="stats-grid" class="mx-auto mt-14 grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-3"></dl>
+
+                <div class="mt-14">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-slate-500">Works with your favorite platforms</p>
+                    <ul id="platform-list" class="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-semibold text-slate-400"></ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FEATURES ===== -->
+        <section id="features" class="bg-slate-900/30 py-20">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <h2 class="text-3xl font-extrabold text-white sm:text-4xl">Why people love VidSaver</h2>
+                    <p class="mt-3 text-slate-400">Everything you need to save videos, nothing you don't.</p>
+                </div>
+                <div id="feature-grid" class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"></div>
+            </div>
+        </section>
+
+        <!-- ===== POPULAR VIDEOS ===== -->
+        <section id="popular" class="py-20">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl">
+                    <h2 class="text-3xl font-extrabold text-white sm:text-4xl">Trending Downloads</h2>
+                    <p class="mt-2 text-slate-400">Videos people are saving right now.</p>
+                </div>
+                <div id="video-grid" class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+            </div>
+        </section>
+
+        <!-- ===== HOW IT WORKS ===== -->
+        <section id="how" class="bg-slate-900/30 py-20">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <h2 class="text-3xl font-extrabold text-white sm:text-4xl">How it works</h2>
+                    <p class="mt-3 text-slate-400">Three simple steps to save any video.</p>
+                </div>
+                <div id="steps-grid" class="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3"></div>
+            </div>
+        </section>
+
+        <!-- ===== CTA BANNER ===== -->
+        <section class="py-16">
+            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+                <div class="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-900/40 p-10 text-center sm:p-14">
+                    <h2 class="text-3xl font-extrabold text-white">Ready to save your first video?</h2>
+                    <p class="mt-3 text-slate-400">It takes less than 10 seconds — and it's completely free.</p>
+                    <a href="#home" class="mt-7 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-900/40 transition hover:opacity-90">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4"/>
+                        </svg>
+                        Start Downloading
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="border-t border-slate-800 bg-slate-950">
+        <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 gap-10 md:grid-cols-6">
+                <div class="md:col-span-2">
+                    <a href="#home" class="flex items-center gap-2" aria-label="VidSaver back to top">
+                        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600">
+                            <svg class="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </span>
+                        <span class="text-lg font-extrabold tracking-tight text-white">Vid<span class="text-violet-400">Saver</span></span>
+                    </a>
+                    <p class="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
+                        A free, fast, and secure way to download videos from anywhere on the internet.
+                    </p>
+                </div>
+                <div id="footer-cols" class="grid grid-cols-2 gap-8 sm:grid-cols-4 md:col-span-4"></div>
+            </div>
+            <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-slate-800/70 pt-6 text-sm text-slate-500 sm:flex-row">
+                <p>© 2025 VidSaver. All rights reserved.</p>
+                <p>Built with ❤ for the internet.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===================== DATA LAYER =====================
+        const navItems = [
+            { label: "Home", href: "#home" },
+            { label: "Features", href: "#features" },
+            { label: "Popular", href: "#popular" },
+            { label: "How It Works", href: "#how" }
+        ];
+
+        const platforms = [
+            { icon: "▶", name: "YouTube" },
+            { icon: "♫", name: "TikTok" },
+            { icon: "◉", name: "Instagram" },
+            { icon: "▷", name: "Vimeo" },
+            { icon: "ƒ", name: "Facebook" },
+            { icon: "𝕏", name: "X" }
+        ];
+
+        const stats = [
+            { value: "2M+", label: "Videos downloaded" },
+            { value: "500+", label: "Platforms supported" },
+            { value: "4.9★", label: "Average rating" }
+        ];
+
+        const features = [
+            { icon: "⚡", title: "Lightning Fast", desc: "Optimized servers deliver your video in seconds, not minutes." },
+            { icon: "🎥", title: "Up to 4K Quality", desc: "Grab videos in stunning 4K, Full HD, or lightweight SD." },
+            { icon: "🛡️", title: "Safe & Secure", desc: "Encrypted processing with zero ads, malware, or hidden trackers." },
+            { icon: "♾️", title: "Unlimited & Free", desc: "No caps, no accounts, no payments. Download as much as you want." }
+        ];
+
+        const videos = [
+            { title: "Epic Mountain Sunrise Timelapse", tag: "Nature", duration: "4:32", views: "1.2M", size: "345 MB", img: "https://picsum.photos/640/360?random=201" },
+            { title: "Easy 10-Minute Pasta Recipe", tag: "Food", duration: "10:15", views: "890K", size: "820 MB", img: "https://picsum.photos/640/360?random=202" },
+            { title: "Learn JavaScript in One Hour", tag: "Education", duration: "58:42", views: "2.4M", size: "1.4 GB", img: "https://picsum.photos/640/360?random=203" },
+            { title: "Ultimate Home Workout Routine", tag: "Fitness", duration: "22:08", views: "650K", size: "610 MB", img: "https://picsum.photos/640/360?random=204" },
+            { title: "City Night Drive — 4K Cinematic", tag: "Cinematic", duration: "8:01", views: "3.1M", size: "2.2 GB", img: "https://picsum.photos/640/360?random=205" },
+            { title: "Deep Focus Music for Studying", tag: "Music", duration: "60:00", views: "5.7M", size: "180 MB", img: "https://picsum.photos/640/360?random=206" }
+        ];
+
+        const steps = [
+            { num: "1", title: "Paste Link", desc: "Copy the video URL from any platform and paste it into the input box above." },
+            { num: "2", title: "Choose Format", desc: "Pick MP4, MP3, or 4K quality — whatever fits your needs." },
+            { num: "3", title: "Hit Download", desc: "Your video is processed and saved to your device in seconds." }
+        ];
+
+        const footerCols = [
+            { title: "Product", links: ["Download", "Features", "Pricing", "Changelog"] },
+            { title: "Resources", links: ["Help Center", "API Docs", "Tutorials", "System Status"] },
+            { title: "Company", links: ["About Us", "Blog", "Contact", "Careers"] },
+            { title: "Legal", links: ["Privacy", "Terms", "DMCA", "Cookies"] }
+        ];
+
+        const formatOptions = [
+            { id: "mp4-hd", label: "MP4 — 1080p HD", size: "~1.2 GB" },
+            { id: "mp4-sd", label: "MP4 — 720p", size: "~450 MB" },
+            { id: "mp3", label: "MP3 — Audio only", size: "~10 MB" }
+        ];
+
+        // ===================== RENDER FUNCTIONS =====================
+        function renderNav(items) {
+            return items.map(item => `
+                <li>
+                    <a href='${item.href}' class='inline-block rounded-lg px-3 py-2 text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-white'>${item.label}</a>
+                </li>`).join("");
+        }
+
+        function renderPlatforms(items) {
+            return items.map(item => `
+                <li class='flex items-center gap-1.5'>
+                    <span class='text-violet-400' aria-hidden='true'>${item.icon}</span>
+                    ${item.name}
+                </li>`).join("");
+        }
+
+        function renderStats(items) {
+            return items.map(item => `
+                <div class='rounded-2xl border border-slate-800 bg-slate-900/60 px-6 py-5'>
+                    <dt class='text-3xl font-extrabold text-white'>${item.value}</dt>
+                    <dd class='mt-1 text-sm text-slate-400'>${item.label}</dd>
+                </div>`).join("");
+        }
+
+        function renderFeatures(items) {
+            return items.map(item => `
+                <article class='rounded-2xl border border-slate-800 bg-slate-900/60 p-6 transition hover:-translate-y-1 hover:border-violet-500/40'>
+                    <div class='grid h-12 w-12 place-items-center rounded-xl bg-violet-600/15 text-2xl' aria-hidden='true'>${item.icon}</div>
+                    <h3 class='mt-4 text-lg font-bold text-white'>${item.title}</h3>
+                    <p class='mt-2 text-sm leading-relaxed text-slate-400'>${item.desc}</p>
+                </article>`).join("");
+        }
+
+        function renderVideos(items) {
+            return items.map(item => `
+                <article class='group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 transition hover:border-violet-500/40'>
+                    <div class='relative aspect-video overflow-hidden'>
+                        <img src='${item.img}' alt='${item.title}' loading='lazy' class='h-full w-full object-cover transition duration-500 group-hover:scale-105'>
+                        <span class='absolute bottom-2 right-2 rounded bg-black/75 px-2 py-0.5 text-xs font-semibold text-white'>${item.duration}</span>
+                        <span class='absolute left-2 top-2 rounded bg-violet-600/90 px-2 py-0.5 text-xs font-semibold text-white'>${item.tag}</span>
+                    </div>
+                    <div class='p-5'>
+                        <h3 class='font-bold leading-snug text-white line-clamp-2'>${item.title}</h3>
+                        <div class='mt-2 flex items-center justify-between text-xs text-slate-400'>
+                            <span>👁 ${item.views} views</span>
+                            <span>💾 ${item.size}</span>
+                        </div>
+                        <button data-card-download='${item.title}' class='mt-4 w-full rounded-lg border border-violet-500/40 py-2.5 text-sm font-semibold text-violet-300 transition-colors hover:bg-violet-600 hover:text-white' aria-label='Download ${item.title}'>
+                            Download
+                        </button>
+                    </div>
+                </article>`).join("");
+        }
+
+        function renderSteps(items) {
+            return items.map(item => `
+                <div class='relative rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center'>
+                    <span class='mx-auto grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-extrabold text-white' aria-hidden='true'>${item.num}</span>
+                    <h3 class='mt-5 text-lg font-bold text-white'>${item.title}</h3>
+                    <p class='mt-2 text-sm leading-relaxed text-slate-400'>${item.desc}</p>
+                </div>`).join("");
+        }
+
+        function renderFooterCols(cols) {
+            return cols.map(col => `
+                <div>
+                    <h3 class='text-sm font-semibold uppercase tracking-wider text-white'>${col.title}</h3>
+                    <ul class='mt-4 space-y-2'>
+                        ${col.links.map(link => `
+                            <li>
+                                <a href='#home' class='text-sm text-slate-400 transition-colors hover:text-violet-300'>${link}</a>
+                            </li>`).join("")}
+                    </ul>
+                </div>`).join("");
+        }
+
+        function renderFormats(url) {
+            return `
+                <div class='flex items-start gap-3'>
+                    <span class='text-2xl' aria-hidden='true'>✅</span>
+                    <div class='min-w-0 flex-1'>
+                        <p class='text-sm font-semibold text-white'>Video detected successfully!</p>
+                        <p class='mt-0.5 truncate text-xs text-slate-400' title='${url}'>${url}</p>
+                    </div>
+                </div>
+                <div class='mt-4 space-y-2'>
+                    ${formatOptions.map(option => `
+                        <button type='button' data-format='${option.label}' class='flex w-full items-center justify-between rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-3 text-sm text-slate-200 transition hover:border-violet-500 hover:bg-slate-800'>
+                            <span class='font-medium'>${option.label}</span>
+                            <span class='text-xs text-slate-400'>${option.size}</span>
+                        </button>`).join("")}
+                </div>`;
+        }
+
+        // ===================== MOUNT =====================
+        document.getElementById("nav-list").innerHTML = renderNav(navItems);
+        document.getElementById("mobile-nav-list").innerHTML = renderNav(navItems);
+        document.getElementById("platform-list").innerHTML = renderPlatforms(platforms);
+        document.getElementById("stats-grid").innerHTML = renderStats(stats);
+        document.getElementById("feature-grid").innerHTML = renderFeatures(features);
+        document.getElementById("video-grid").innerHTML = renderVideos(videos);
+        document.getElementById("steps-grid").innerHTML = renderSteps(steps);
+        document.getElementById("footer-cols").innerHTML = renderFooterCols(footerCols);
+
+        // ===================== TOAST =====================
+        function showToast(message) {
+            const existing = document.getElementById("toast");
+            if (existing) existing.remove();
+            const toast = document.createElement("div");
+            toast.id = "toast";
+            toast.setAttribute("role", "status");
+            toast.className = "fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 whitespace-nowrap rounded-xl border border-slate-700 bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-2xl";
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(function () {
+                toast.remove();
+            }, 3000);
+        }
+
+        // ===================== MOBILE MENU =====================
+        const menuBtn = document.getElementById("menu-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        menuBtn.addEventListener("click", function () {
+            const willOpen = mobileMenu.classList.contains("hidden");
+            mobileMenu.classList.toggle("hidden");
+            menuBtn.setAttribute("aria-expanded", String(willOpen));
+        });
+
+        // ===================== DOWNLOAD FORM =====================
+        const downloadForm = document.getElementById("download-form");
+        const urlInput = document.getElementById("video-url");
+        const formError = document.getElementById("form-error");
+        const downloadResult = document.getElementById("download-result");
+        const downloadBtn = document.getElementById("download-btn");
+        const originalBtnHtml = downloadBtn.innerHTML;
+
+        downloadForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const url = urlInput.value.trim();
+
+            formError.classList.add("hidden");
+
+            if (!url) {
+                formError.textContent = "Please paste a valid video URL.";
+                formError.classList.remove("hidden");
+                urlInput.focus();
+                return;
+            }
+
+            if (!/^https?:\/\/.+/.test(url)) {
+                formError.textContent = "That doesn't look like a valid URL — make sure it starts with http:// or https://";
+                formError.classList.remove("hidden");
+                urlInput.focus();
+                return;
+            }
+
+            downloadBtn.disabled = true;
+            downloadBtn.innerHTML = "<span class='h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white'></span><span>Processing…</span>";
+            downloadResult.classList.remove("hidden");
+            downloadResult.innerHTML = "<div class='flex items-center gap-3 text-sm text-slate-300'><span class='h-4 w-4 animate-spin rounded-full border-2 border-violet-500/40 border-t-violet-500'></span>Analyzing link and fetching video info…</div>";
+
+            setTimeout(function () {
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = originalBtnHtml;
+                downloadResult.innerHTML = renderFormats(url);
+            }, 1600);
+        });
+
+        // ===================== EVENT DELEGATION =====================
+        document.addEventListener("click", function (e) {
+            // Smooth-scroll any hash anchor
+            const link = e.target.closest("a[href^='#']");
+            if (link) {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute("href"));
+                if (target) {
+                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+                mobileMenu.classList.add("hidden");
+                menuBtn.setAttribute("aria-expanded", "false");
+                return;
+            }
+
+            // Format option buttons in the result panel
+            const formatBtn = e.target.closest("[data-format]");
+            if (formatBtn) {
+                showToast("⏬ Downloading " + formatBtn.dataset.format + " …");
+                return;
+            }
+
+            // Video card download buttons
+            const cardBtn = e.target.closest("[data-card-download]");
+            if (cardBtn) {
+                showToast("📥 Preparing " + cardBtn.dataset.cardDownload + " …");
+                return;
+            }
+        });
+    </script>
+</body>
+</html>
